@@ -1,6 +1,6 @@
 # Anti-Troll Protection System
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![QB-Core](https://img.shields.io/badge/QB--Core-framework-green.svg)](https://github.com/qbcore-framework)
 
 A QBCore resource that provides protection for new players against trolling.
@@ -37,3 +37,7 @@ Edit `config.lua` to customize:
 ## Support
 
 For support, join our Discord server or create an issue in this repository.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
