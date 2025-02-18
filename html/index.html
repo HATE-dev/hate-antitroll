@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #protection-container {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            width: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            z-index: 1;
+        }
+
+        .server-logo {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .server-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit:contain;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .shield-icon {
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .shield-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+        .title-group {
+            flex: 1;
+        }
+
+        #timer-label {
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        #time {
+            color: #38bdf8;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #description {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            transition: width 1s linear;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 20px);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div id="protection-container">
+        <div class="glow"></div>
+        <div class="content">
+            <div class="server-logo">
+                <img src="https://i.ibb.co/XLFS8vq/hdevyeni3.png" alt="Server Logo">
+            </div>
+            <div class="header">
+                <div class="shield-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L4 6V12C4 17.5 7.2 22.5 12 24C16.8 22.5 20 17.5 20 12V6L12 2Z" />
+                    </svg>
+                </div>
+                <div class="title-group">
+                    <div id="timer-label">PROTECTION ACTIVE</div>
+                    <div id="time">00:00</div>
+                </div>
+            </div>
+            <div id="description">
+                Special protection is active. Your <span class="highlight">reward</span> will be credited to your account when the time expires.
+            </div>
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+    
+    <script>
+        const container = document.getElementById('protection-container');
+        let startTime = 0;
+        let totalTime = 0;
+        
+        window.addEventListener('message', function(event) {
+            if (event.data.type === "showTimer") {
+                container.style.display = 'block';
+                startTime = Date.now();
+                totalTime = event.data.time;
+                updateTimer(event.data.time);
+                updateProgressBar(100);
+            } else if (event.data.type === "updateTimer") {
+                updateTimer(event.data.time);
+                const elapsed = Date.now() - startTime;
+                const percentage = (1 - (event.data.time / totalTime)) * 100;
+                updateProgressBar(percentage);
+            } else if (event.data.type === "hideTimer") {
+                container.style.display = 'none';
+            }
+        });
+        
+        function updateTimer(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            document.getElementById('time').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgressBar(percentage) {
+            document.querySelector('.progress-bar').style.width = `${percentage}%`;
+        }
+    </script>
+</body>
+</html>
